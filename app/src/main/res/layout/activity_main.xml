@@ -20,7 +20,6 @@
         android:id="@+id/textNomePasta"
         android:layout_width="70sp"
         android:layout_height="50dp"
-        android:layout_marginStart="8dp"
         android:layout_marginBottom="16dp"
         android:ems="10"
         android:hint="Pasta"
@@ -44,7 +43,6 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:text="/"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/textNomePasta"
@@ -53,12 +51,12 @@
 
     <EditText
         android:id="@+id/textNomeArquivo"
-        android:layout_width="100sp"
+        android:layout_width="70sp"
         android:layout_height="50dp"
-        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="Arquivo"
         android:inputType="textPersonName"
+        android:text="1"
         app:layout_constraintBottom_toBottomOf="@+id/textNomePasta"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="@+id/textNomePasta" />
@@ -67,9 +65,9 @@
         android:id="@+id/btnPic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/textNomePasta"
-        app:layout_constraintStart_toEndOf="@+id/textNomeArquivo"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toTopOf="@+id/textNomePasta"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
@@ -90,5 +88,15 @@
         app:layout_constraintBottom_toTopOf="@+id/btnAnalise"
         app:layout_constraintEnd_toEndOf="@+id/btnAnalise"
         app:layout_constraintTop_toBottomOf="@+id/viewFinder" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=".jpg"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textNomePasta"
+        app:layout_constraintStart_toEndOf="@+id/textNomeArquivo"
+        app:layout_constraintTop_toTopOf="@+id/textNomePasta" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

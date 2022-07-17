@@ -1,31 +1,33 @@
 package com.medidaspla;
 
-import androidx.activity.result.ActivityResultCaller;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.CameraProvider;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.Toast;
+
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.content.ContextCompat;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,32 +38,24 @@ public class MainActivity extends AppCompatActivity {
     private PreviewView viewFinder;
     private Switch switchBordas;
 
-    // solicitador de permissões
-    private ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), b -> {}
-    );
-
     // use cases:
     private ImageCapture imageCapture;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         instantiateViews();
+
         btnAnalise.setOnClickListener(v -> startActivity(new Intent(
                 MainActivity.this, AnaliseActivity.class)
         ));
 
-
-        // solicita permissão para uso de câmera, se não já tiver
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED
-        ) requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-
+        // solicita permissões:
+        permissionHandler(Manifest.permission.CAMERA);
+        permissionHandler(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissionHandler(Manifest.permission.READ_EXTERNAL_STORAGE);
 
         // tenta inicializar casos de uso
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider
@@ -75,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, getMainExecutor());
 
+        btnPic.setOnClickListener(v -> capturePhoto());
     }
 
     private void instantiateViews(){
@@ -85,6 +80,20 @@ public class MainActivity extends AppCompatActivity {
         btnPic = findViewById(R.id.btnPic);
         btnAnalise = findViewById(R.id.btnAnalise);
         switchBordas = findViewById(R.id.switchBordas);
+    }
+
+    private void permissionHandler(String permission){
+        // no estado atual o aplicativo simplesmente não funciona se não tiver permissões
+
+        // checa se não tem a permissão
+        if(ContextCompat.checkSelfPermission(this, permission)
+                != PackageManager.PERMISSION_GRANTED
+        ) {
+            // solicita a permissão
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(), b -> {}
+            ).launch(permission);
+        }
     }
 
     private void startCameraX(ProcessCameraProvider cameraProvider) {
@@ -105,5 +114,42 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
+    }
+
+    private void capturePhoto(){
+        String subfolder = txtPasta.getText().toString();
+        String fileName = txtArquivo.getText().toString() + ".jpg";
+
+        File appDir = new File(
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                "PLA/" +
+                subfolder
+        );
+
+        if(! appDir.exists())
+            appDir.mkdir();
+
+        File photoFile = new File(appDir.getAbsolutePath(), fileName);
+
+        // salva a imagem:
+        imageCapture.takePicture(
+                new ImageCapture.OutputFileOptions.Builder(photoFile).build(),
+                getMainExecutor(),
+                new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        Toast.makeText(MainActivity.this,
+                                subfolder + "/" + fileName + " salvo com sucesso",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        Toast.makeText(MainActivity.this,
+                                "Erro ao salvar imagem",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 }
