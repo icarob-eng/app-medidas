@@ -33,7 +33,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:text="/"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/textNomePasta"
@@ -67,9 +67,9 @@
         android:id="@+id/btnPic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/textNomePasta"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textNomeArquivo"
         app:layout_constraintTop_toTopOf="@+id/textNomePasta"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
@@ -77,10 +77,18 @@
         android:id="@+id/btnAnalise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:text="Análise"
-        app:layout_constraintBottom_toBottomOf="@+id/textNomePasta"
-        app:layout_constraintEnd_toStartOf="@+id/btnPic"
-        app:layout_constraintStart_toEndOf="@+id/textNomeArquivo"
-        app:layout_constraintTop_toTopOf="@+id/textNomePasta" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Switch
+        android:id="@+id/switchBordas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bordas"
+        app:layout_constraintBottom_toTopOf="@+id/btnAnalise"
+        app:layout_constraintEnd_toEndOf="@+id/btnAnalise"
+        app:layout_constraintTop_toBottomOf="@+id/viewFinder" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
