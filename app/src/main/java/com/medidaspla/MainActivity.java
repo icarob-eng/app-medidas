@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -120,16 +121,24 @@ public class MainActivity extends AppCompatActivity {
         String subfolder = txtPasta.getText().toString();
         String fileName = txtArquivo.getText().toString() + ".jpg";
 
-        File appDir = new File(
-                getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                "PLA/" +
-                subfolder
-        );
+//        File appDir = new File(
+//                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+//                "PLA"
+//        );
 
+        File appDir = new File(
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES),  // aqui mora o problema
+                "PLA"
+        );
         if(! appDir.exists())
             appDir.mkdir();
 
-        File photoFile = new File(appDir.getAbsolutePath(), fileName);
+        File subfolderDir = new File(appDir.getAbsolutePath(), subfolder);
+        if(! subfolderDir.exists())
+            subfolderDir.mkdir();
+
+        File photoFile = new File(subfolderDir.getAbsolutePath(), fileName);
+        Log.d("PhotoPath", photoFile.getAbsolutePath());
 
         // salva a imagem:
         imageCapture.takePicture(
